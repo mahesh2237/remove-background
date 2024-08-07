@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "@imgly/background-removal-node": "^1.4.5"
+    "@imgly/background-removal-node": "^1.4.5",
+    "express": "^4.19.2"
   }
 }
