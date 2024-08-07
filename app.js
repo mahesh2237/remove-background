@@ -14,34 +14,39 @@ app.get("/", function (req, res) {
   res.send("Background Remover Service Running");
 });
 
-app.get("/remove-background/:path", async function (req, res) {
+app.get("/remove-background/", async function (req, res) {
   try {
-    const filePath = req.params.path;
-    const resultDataURL = await removeImageBackground(filePath);
+    const filePath = req.query.path;
+    if (filePath) {
+      const resultDataURL = await removeImageBackground(filePath);
 
-    console.log(path.basename(filePath));
+      console.log(path.basename(filePath));
 
-    const filename = path.parse(filePath).name;
+      const filename = path.parse(filePath).name;
 
-   
-    parentDirectoryPath = path.dirname(filePath);
+      parentDirectoryPath = path.dirname(filePath);
 
-    const newFilePath = parentDirectoryPath+"/"+filename + "-remove-bg.png";
+      const newFilePath =
+        parentDirectoryPath + "/" + filename + "-remove-bg.png";
 
-    // Writing the result to a file (optional)
-    fs.writeFileSync(
-        newFilePath,
-      resultDataURL.split(";base64,").pop(),
-      { encoding: "base64" }
-    );
+      // Writing the result to a file (optional)
+      fs.writeFileSync(newFilePath, resultDataURL.split(";base64,").pop(), {
+        encoding: "base64",
+      });
 
-    // Logging success message
-    console.log("Background removed successfully.");
+      // Logging success message
+      console.log("Background removed successfully.");
+      res.send({status: 'success','message':  "Background removed successfully" , "path" : newFilePath});
+      
+      res.send("Backgroudnd Removed Suceessfully")
+    } else {
+    }
   } catch (error) {
     // Logging error message
     console.error("Error:", error.message);
+    res.send({status: 'error','message':  "Error in Remove Background"});
+      
   }
-  res.send("Background Remover Service Running");
 });
 
 app.post("/", function (req, res) {
@@ -59,7 +64,6 @@ async function removeImageBackground(imgSource) {
     // Removing background
     const blob = await removeBackground(imgSource);
 
-   
     // Converting Blob to buffer
     const buffer = Buffer.from(await blob.arrayBuffer());
 
